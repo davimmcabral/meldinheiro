@@ -63,10 +63,7 @@ class _TransactionFormState extends State<TransactionForm> {
       );
       // Salva no banco de dados usando DatabaseHelper
       await DatabaseHelper.instance.insertTransaction(transaction);
-      // Chama a função de callback para atualizar a tela anterior
-      widget.onSave(transaction);
-
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(transaction);
     }
   }
 
