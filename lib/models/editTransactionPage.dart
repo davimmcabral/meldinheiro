@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meldinheiro/models/transaction.dart';
+import 'package:meldinheiro/models/transactionProvider.dart';
+import 'package:provider/provider.dart';
 import '../database/database.dart';
 import 'category.dart';
 
@@ -16,11 +18,24 @@ class EditTransactionPage extends StatefulWidget {
 class _EditTransactionPageState extends State<EditTransactionPage> {
   final _formKey = GlobalKey<FormState>();
   late String _type;
-  late String _category;
-  late String _subCategory;
+  late String? _category;
+  late String? _subCategory;
   late String? _description;
   late DateTime _date;
-  late double _amount;
+  late double? _amount;
+
+  List<String> getCategories(String type) {
+    return CategoryModel.categories
+        .where((category) => category.type == type)
+        .map((category) => category.category)
+        .toList();
+  }
+
+  List<String> getSubCategories(String category) {
+    return CategoryModel.categories
+        .firstWhere((cat) => cat.category == category)
+        .subCategories;
+  }
 
   @override
   void initState() {
@@ -32,6 +47,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
     _date = widget.transaction.date;
     _amount = widget.transaction.amount;
   }
+
 
   Future<void> _selectDate() async {
     final pickedDate = await showDatePicker(
@@ -53,20 +69,24 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
       final updatedTransaction = Transaction(
         id: widget.transaction.id,
         type: _type,
-        category: _category,
-        subCategory: _subCategory,
+        category: _category!,
+        subCategory: _subCategory!,
         description: _description,
         date: _date,
-        amount: _amount,
+        amount: _amount!,
       );
 
-      await DatabaseHelper.instance.updateTransaction(updatedTransaction);
+      //await DatabaseHelper.instance.updateTransaction(updatedTransaction);
+      Provider.of<TransactionProvider>(context, listen: false)
+          .updateTransaction(updatedTransaction);
       Navigator.of(context).pop(updatedTransaction);
     }
   }
 
   void _deleteTransaction() async {
-    await DatabaseHelper.instance.deleteTransaction(widget.transaction.id!);
+    Provider.of<TransactionProvider>(context, listen: false)
+        .deleteTransaction(widget.transaction.id!);
+    //await DatabaseHelper.instance.deleteTransaction(widget.transaction.id!);
     Navigator.of(context).pop('delete');
   }
 
@@ -100,24 +120,130 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                 onChanged: (value) {
                   setState(() {
                     _type = value!;
+                    _category = null;
+                    _subCategory = null;
                   });
                 },
                 validator: (value) =>
                 value == null ? 'Por favor, selecione o tipo' : null,
               ),
+              if (_type != null)
+                DropdownButtonFormField<String>(
+                  value: _category,
+                  decoration: InputDecoration(labelText: 'Categoria'),
+                  items: getCategories(_type!).map((category) {
+                    return DropdownMenuItem(
+                      value: category,
+                      child: Text(category),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _category = value;
+                      _subCategory = null;
+                    });
+                  },
+                  validator: (value) =>
+                  value == null ? 'Por favor, selecione a categoria' : null,
+                ),
+              if (_category != null)
+                DropdownButtonFormField<String>(
+                  value: _subCategory,
+                  decoration: InputDecoration(labelText: 'Subcategoria'),
+                  items: getSubCategories(_category!).map((subCategory) {
+                    return DropdownMenuItem(
+                      value: subCategory,
+                      child: Text(subCategory),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _subCategory = value;
+                    });
+                  },
+                  validator: (value) => value == null
+                      ? 'Por favor, selecione a subcategoria'
+                      : null,
+                ),
+              TextFormField(
+                initialValue: _description,
+                decoration: InputDecoration(labelText: 'Descrição'),
+                onSaved: (value) {
+                  _description = value;
+                },
+              ),
+              TextFormField(
+                initialValue: _amount.toString(),
+                decoration: InputDecoration(labelText: 'Valor'),
+                keyboardType: TextInputType.number,
+                onSaved: (value) {
+                  _amount = double.tryParse(value!) ?? 0.0;
+                },
+                validator: (value) =>
+                value == null || double.tryParse(value) == null
+                    ? 'Por favor, insira um valor válido'
+                    : null,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Data: ${DateFormat('dd/MM/yyyy').format(_date)}',
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: _selectDate,
+                    child: Text('Selecionar Data'),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: _saveTransaction,
+                child: Text('Salvar'),
+              ),
+            ],
+          ),
+        ),
+
+
+
+          /*child: ListView(
+            children: [
               DropdownButtonFormField<String>(
-                value: _category,
-                decoration: InputDecoration(labelText: 'Categoria'),
-                items: CategoryModel.categories
-                    .map((category) => DropdownMenuItem(
-                  value: category.category,
-                  child: Text(category.category),
+                value: _type,
+                decoration: InputDecoration(labelText: 'Tipo'),
+                items: ['Receita', 'Despesa']
+                    .map((type) => DropdownMenuItem(
+                  value: type,
+                  child: Text(type),
                 ))
                     .toList(),
                 onChanged: (value) {
                   setState(() {
+                    _type = value!;
+                    _category = null;
+                    _subCategory = null;
+                  });
+                },
+                validator: (value) =>
+                value == null ? 'Por favor, selecione o tipo' : null,
+              ),
+
+
+              DropdownButtonFormField<String>(
+                value: _category,
+                decoration: InputDecoration(labelText: 'Categoria'),
+                items: getCategories(_type!).map((category) {
+                  return DropdownMenuItem(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
                     _category = value!;
-                    _subCategory = '';
+                    _subCategory = null;
                   });
                 },
                 validator: (value) =>
@@ -182,7 +308,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
               ),
             ],
           ),
-        ),
+        ),*/
       ),
     );
   }

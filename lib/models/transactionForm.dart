@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:meldinheiro/models/transactionProvider.dart';
+import 'package:provider/provider.dart';
 
 import '../database/database.dart';
 import 'category.dart';
@@ -61,8 +63,9 @@ class _TransactionFormState extends State<TransactionForm> {
         date: _date,
         amount: _amount!,
       );
-      // Salva no banco de dados usando DatabaseHelper
-      await DatabaseHelper.instance.insertTransaction(transaction);
+      // Salva no banco de dados usando Provider
+      Provider.of<TransactionProvider>(context, listen: false)
+          .addTransaction(transaction);
       Navigator.of(context).pop(transaction);
     }
   }
