@@ -1,21 +1,20 @@
-class Category {
-  int? id;
-  String name;
-  String type; // Tipo da transação (Receita ou Despesa)
+class SubCategory {
+  final int? id;
+  final String name;
+  final int categoryId;
 
-
-  Category({
+  SubCategory({
     this.id,
     required this.name,
-    required this.type,
-
+    required this.categoryId,
   });
+
   // Converter de Map (banco de dados) para Objeto
-  factory Category.fromMap(Map<String, dynamic> map) {
-    return Category(
+  factory SubCategory.fromMap(Map<String, dynamic> map) {
+    return SubCategory(
       id: map['id'],
       name: map['name'],
-      type: map['type'],
+      categoryId: map['category_id'],
     );
   }
 
@@ -24,9 +23,7 @@ class Category {
     return {
       'id': id,
       'name': name,
-      'type': type,
+      'category_id': categoryId,
     };
   }
 }
-
-
