@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:meldinheiro/viewmodels/subcategory_viewmodel.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/category_viewmodel.dart';
 import '../../models/category.dart';
 import '../../models/subcategory.dart';
 
 class AddCategoryScreen extends StatefulWidget {
+  const AddCategoryScreen({super.key});
+
   @override
   _AddCategoryScreenState createState() => _AddCategoryScreenState();
 }
@@ -30,7 +33,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Nova Categoria')),
+      appBar: AppBar(title: const Text('Nova Categoria')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -115,7 +118,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.remove_circle, color: Colors.red),
+                      icon: const Icon(Icons.remove_circle, color: Colors.red),
                       onPressed: _subcategories.length > 1
                           ? () => _removeSubcategoryField(index)
                           : null,
@@ -127,8 +130,8 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
               const SizedBox(height: 8),
               TextButton.icon(
                 onPressed: _addSubcategoryField,
-                icon: Icon(Icons.add),
-                label: Text('Adicionar Subcategoria'),
+                icon: const Icon(Icons.add),
+                label: const Text('Adicionar Subcategoria'),
               ),
 
               const SizedBox(height: 24),
@@ -137,14 +140,15 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                   if (_formKey.currentState!.validate() && _type != null) {
                     _formKey.currentState!.save();
 
-                    final provider = Provider.of<CategoryViewModel>(context, listen: false);
+                    final categoryVM = Provider.of<CategoryViewModel>(context, listen: false);
+                    final subCategoryVM = Provider.of<SubCategoryViewModel>(context, listen: false);
 
                     // Cria e adiciona a categoria
                     final newCategory = Category(name: _categoryName!, type: _type!);
-                    await provider.addCategory(newCategory);
+                    await categoryVM.addCategory(newCategory);
 
                     // Obtem a categoria salva com o ID (recarregado do banco após inserção)
-                    final savedCategory = provider.categories.lastWhere((c) => c.name == _categoryName! && c.type == _type!);
+                    final savedCategory = categoryVM.categories.lastWhere((c) => c.name == _categoryName! && c.type == _type!);
 
                     // Adiciona cada subcategoria relacionada
                     for (final subcategory in _subcategories) {
@@ -153,7 +157,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                         name: subcategory.trim(),
                         categoryId: savedCategory.id!, // id atribuído pelo SQLite
                       );
-                      await provider.addSubCategory(newSubCategory);
+                      await subCategoryVM.addSubCategory(newSubCategory);
                     }
                     Navigator.of(context).pop(true);
 
@@ -184,7 +188,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                     );
                   }
                 },*/
-                child: Text('Salvar Categoria'),
+                child: const Text('Salvar Categoria'),
               ),
             ],
           ),

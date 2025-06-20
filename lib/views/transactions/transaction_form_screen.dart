@@ -4,8 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:meldinheiro/viewmodels/category_viewmodel.dart';
 import 'package:meldinheiro/models/subcategory.dart';
 import 'package:meldinheiro/viewmodels/account_viewmodel.dart';
+import 'package:meldinheiro/viewmodels/subcategory_viewmodel.dart';
 import 'package:meldinheiro/viewmodels/transaction_viewmodel.dart';
-import 'package:meldinheiro/views/categories/categoryListScreen.dart';
+import 'package:meldinheiro/views/categories/category_list_screen.dart';
 import 'package:provider/provider.dart';
 import '../../models/category.dart';
 import '../../models/transaction.dart';
@@ -92,11 +93,12 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final transactionVM = Provider.of<TransactionViewModel>(context);
-    Provider.of<CategoryViewModel>(context, listen: false).loadDefaultCategories();
+    //Provider.of<TransactionViewModel>(context, listen: false).loadTransactions();
+    Provider.of<CategoryViewModel>(context, listen: false).loadCategories();
+    Provider.of<SubCategoryViewModel>(context, listen: false).loadSubCategories();
     Provider.of<AccountViewModel>(context, listen: false).loadAccounts();
     final accountVM = Provider.of<AccountViewModel>(context);
-    final accounts = accountVM.account;
+    final accounts = accountVM.accounts;
 
     return Scaffold(
       appBar: AppBar(
@@ -222,7 +224,7 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
 
                           SubCategory? subcategory;
                           try {
-                            subcategory = Provider.of<CategoryViewModel>(context, listen: false)
+                            subcategory = Provider.of<SubCategoryViewModel>(context, listen: false)
                                 .subCategories
                                 .firstWhere((s) => s.id == _subCategoryId);
                           } catch (_) {

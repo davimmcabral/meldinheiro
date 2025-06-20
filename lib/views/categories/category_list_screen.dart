@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:meldinheiro/views/categories/addCategoryScreen.dart';
-import 'package:meldinheiro/views/categories/editCategoryScreen.dart';
+import 'package:meldinheiro/viewmodels/subcategory_viewmodel.dart';
+import 'package:meldinheiro/views/categories/category_add_screen.dart';
+import 'package:meldinheiro/views/categories/category_edit_screen.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/category_viewmodel.dart';
 
@@ -20,15 +21,17 @@ class CategoryListScreen extends StatefulWidget {
 }
 
 class _CategoryListScreenState extends State<CategoryListScreen> {
-  late CategoryViewModel categoryProvider;
+  late CategoryViewModel categoryVM;
+  late SubCategoryViewModel subCategoryVM;
 
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
-      categoryProvider = Provider.of<CategoryViewModel>(context, listen: false);
-      categoryProvider.loadCategories();
-      categoryProvider.loadSubCategories();
+      categoryVM = Provider.of<CategoryViewModel>(context, listen: false);
+      subCategoryVM = Provider.of<SubCategoryViewModel>(context, listen: false);
+      categoryVM.loadCategories();
+      subCategoryVM.loadSubCategories();
     });
   }
 
@@ -44,16 +47,16 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
     await Navigator.of(context).push(
     MaterialPageRoute(builder: (_) => const EditCategoryScreen()),
     );
-    await categoryProvider.loadCategories();
-    await categoryProvider.loadSubCategories();
+    await categoryVM.loadCategories();
+    await subCategoryVM.loadSubCategories();
     setState(() {});
     } else if (value == 'adicionar') {
     final result = await Navigator.of(context).push(
     MaterialPageRoute(builder: (_) => AddCategoryScreen()),
     );
     if (result == true) {
-    await categoryProvider.loadCategories();
-    await categoryProvider.loadSubCategories();
+    await categoryVM.loadCategories();
+    await subCategoryVM.loadSubCategories();
     setState(() {});
     }
     }
@@ -106,10 +109,10 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
           )
         ],*/
       ),
-      body: Consumer<CategoryViewModel>(
-        builder: (context, provider, _) {
-          final categories = provider.categories.where((category) => category.type == widget.type).toList();
-          final subcategories = provider.subCategories;
+      body: Consumer2<CategoryViewModel, SubCategoryViewModel>(
+        builder: (context, categoryVM,subCategoryVM, _) {
+          final categories = categoryVM.categories.where((category) => category.type == widget.type).toList();
+          final subcategories = subCategoryVM.subCategories;
 
           return ListView(
             children: categories.map((category) {

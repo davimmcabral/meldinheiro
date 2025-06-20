@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:meldinheiro/component/categorySelection.dart';
 import 'package:meldinheiro/viewmodels/category_viewmodel.dart';
 import 'package:meldinheiro/viewmodels/account_viewmodel.dart';
+import 'package:meldinheiro/viewmodels/subcategory_viewmodel.dart';
 import 'package:meldinheiro/viewmodels/transaction_viewmodel.dart';
-import 'package:meldinheiro/views/homeScreen.dart';
+import 'package:meldinheiro/views/home_page_screen.dart';
 import 'package:meldinheiro/theme/honeytheme.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +13,6 @@ void main() async {
   await initializeDateFormatting('pt_BR', null);
 
   final accountViewModel = AccountViewModel();
-  final transactionViewModel = TransactionViewModel(accountViewModel: accountViewModel);
 
   runApp(
     MultiProvider(
@@ -22,6 +21,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => TransactionViewModel(accountViewModel: accountViewModel)),
         //ChangeNotifierProvider<TransactionViewModel>.value(value: transactionViewModel),
         ChangeNotifierProvider(create: (_) => CategoryViewModel()),
+        ChangeNotifierProvider(create: (_) => SubCategoryViewModel()),
       ],
       child: const MelDinheiro(),
   /*WidgetsFlutterBinding.ensureInitialized();

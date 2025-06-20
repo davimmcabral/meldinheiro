@@ -5,7 +5,7 @@ import 'package:meldinheiro/viewmodels/account_viewmodel.dart';
 import 'package:meldinheiro/viewmodels/transaction_viewmodel.dart';
 import 'package:meldinheiro/views/accounts/editAccountScreen.dart';
 import 'package:provider/provider.dart';
-import '../views/accounts/addAccountScreen.dart';
+import '../accounts/addAccountScreen.dart';
 
 class AccountSummaryCard extends StatelessWidget {
 
@@ -19,7 +19,7 @@ class AccountSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AccountViewModel>(
       builder: (context, accountVM, child) {
-        final accounts = accountVM.account;
+        final accounts = accountVM.accounts;
 
         return Container(
           width: double.infinity,

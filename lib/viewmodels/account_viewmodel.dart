@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meldinheiro/data/account_dao.dart';
+import 'package:meldinheiro/data/daos/account_dao.dart';
 import 'package:meldinheiro/models/transaction.dart' as model;
 import 'package:meldinheiro/models/account.dart';
 
@@ -8,7 +8,7 @@ class AccountViewModel extends ChangeNotifier{
 
   List<Account> _accounts = [];
 
-  List<Account> get account => _accounts;
+  List<Account> get accounts => _accounts;
 
   AccountViewModel() {
     loadAccounts();
@@ -22,7 +22,10 @@ class AccountViewModel extends ChangeNotifier{
   }
 
 
-  void updateBalancesWithTransactions(List<model.Transaction> transactions) {
+  Future<void> updateBalancesWithTransactions(List<model.Transaction> transactions) async {
+    if (_accounts.isEmpty) {
+      await loadAccounts();
+    }
     for (var account in _accounts) {
       double totalIncome = transactions
           .where((t) => t.accountId == account.id && t.type == 'Receita')

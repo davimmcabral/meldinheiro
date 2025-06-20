@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:meldinheiro/models/transactionProvider.dart';
 import 'package:provider/provider.dart';
-import 'package:meldinheiro/widgets/accountCard.dart';
 import '../../models/account.dart';
 
-class AccountScreen extends StatelessWidget {
+/*class AccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accountProvider = Provider.of<TransactionViewModel>(context);
@@ -88,4 +86,4 @@ class AccountScreen extends StatelessWidget {
       ),
     );
   }
-}
+}*/

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meldinheiro/data/transaction_dao.dart';
+import 'package:meldinheiro/data/daos/transaction_dao.dart';
 import 'package:meldinheiro/models/transaction.dart';
 import 'package:meldinheiro/viewmodels/account_viewmodel.dart';
 
@@ -12,7 +12,52 @@ class TransactionViewModel extends ChangeNotifier {
 
   List<Transaction> get transactions => _transactions;
 
+  Map<String, dynamic> _currentFilters = {};
+  Map<String, dynamic> get currentFilters => _currentFilters;
+
+  void applyFilters(Map<String, dynamic> filters) {
+    _currentFilters = filters;
+    notifyListeners();
+  }
+
   List<Transaction> get filteredTransactions {
+    return _transactions.where((transaction) {
+      // Filtra por período
+      bool matchesPeriod = false;
+      switch (_selectedPeriod) {
+        case "Dia":
+          matchesPeriod = _isSameDay(transaction.date, _selectedDate);
+          break;
+        case "Semana":
+          matchesPeriod = _isSameWeek(transaction.date, _selectedDate);
+          break;
+        case "Mês":
+          matchesPeriod = transaction.date.year == _selectedDate.year && transaction.date.month == _selectedDate.month;
+          break;
+        case "Ano":
+          matchesPeriod = transaction.date.year == _selectedDate.year;
+          break;
+        default:
+          matchesPeriod = true;
+      }
+
+      // Filtros adicionais
+      final type = _currentFilters['tipo'];
+      final account = _currentFilters['conta'];
+      final category = _currentFilters['categoria'];
+      final subCategory = _currentFilters['subcategoria'];
+
+      bool matchesTipo = type == null || transaction.type == type;
+      bool matchesConta = account == null || transaction.accountId == account;
+      bool matchesCategoria = category == null || transaction.categoryId == category;
+      bool matchesSubcategoria = subCategory == null || transaction.subCategoryId == subCategory;
+
+      return matchesPeriod && matchesTipo && matchesConta && matchesCategoria && matchesSubcategoria;
+    }).toList();
+  }
+
+
+  List<Transaction> get filteredTransactions1 {
     switch (_selectedPeriod) {
       case "Dia":
         return _transactions.where((t) => _isSameDay(t.date, _selectedDate)).toList();
@@ -55,14 +100,6 @@ class TransactionViewModel extends ChangeNotifier {
   double _expense = 0.0;
   double _balance = 0.0;
 
-
-  
-  double get income1 => _income;
-
-  double get expense1 => _expense;
-
-  double get balance1 => _balance;
-
   // Cálculos com base nas transações filtradas
   double get totalIncome => filteredTransactions
       .where((t) => t.type == 'Receita')
@@ -72,7 +109,6 @@ class TransactionViewModel extends ChangeNotifier {
       .where((t) => t.type == 'Despesa')
       .fold(0.0, (sum, t) => sum + t.amount);
 
-  //double get balance => _accounts.fold(0.0, (sum, accounts) => sum + accounts.balance);
 
   TransactionViewModel({required this.accountViewModel}) {
     loadTransactions();

@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:meldinheiro/component/dateFilterWidget.dart';
+import 'package:meldinheiro/theme/honeytheme.dart';
+import 'package:meldinheiro/views/transactions/transaction_filter_screen.dart';
+import 'package:meldinheiro/widgets/dateFilterWidget.dart';
 import 'package:meldinheiro/models/category.dart';
 import 'package:meldinheiro/models/subcategory.dart';
 import 'package:meldinheiro/viewmodels/account_viewmodel.dart';
+import 'package:meldinheiro/viewmodels/subcategory_viewmodel.dart';
 import 'package:meldinheiro/viewmodels/transaction_viewmodel.dart';
 import 'package:provider/provider.dart';
 import '../../models/transaction.dart' as model;
 import '../../models/account.dart';
 import '../../viewmodels/category_viewmodel.dart';
-import 'editTransactionScreen.dart';
+import 'transaction_edit_screen.dart';
 import 'transaction_form_screen.dart';
 
 class TransactionsHistoryScreen extends StatefulWidget {
@@ -32,7 +35,7 @@ class _TransactionsHistoryScreenState extends State<TransactionsHistoryScreen> {
     initializeDateFormatting('pt_BR', null);
     Future.microtask(() {
       Provider.of<CategoryViewModel>(context, listen: false).loadCategories();
-      Provider.of<CategoryViewModel>(context, listen: false).loadSubCategories();
+      Provider.of<SubCategoryViewModel>(context, listen: false).loadSubCategories();
       Provider.of<TransactionViewModel>(context, listen: false).loadTransactions();
       Provider.of<AccountViewModel>(context, listen: false).loadAccounts();
 
@@ -41,7 +44,8 @@ class _TransactionsHistoryScreenState extends State<TransactionsHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryProvider = Provider.of<CategoryViewModel>(context);
+    final categoryVM = Provider.of<CategoryViewModel>(context);
+    final subCategoryVM = Provider.of<SubCategoryViewModel>(context);
     final transactionVM = Provider.of<TransactionViewModel>(context);
     final transactions = Provider.of<TransactionViewModel>(context).filteredTransactions;
     final accountVM = Provider.of<AccountViewModel>(context);
@@ -57,19 +61,43 @@ class _TransactionsHistoryScreenState extends State<TransactionsHistoryScreen> {
 
     final sortedDates = groupedTransactions.keys.toList()..sort((a, b) => b.compareTo(a));
 
-    //String formattedDate = DateFormat('MMMM yyyy', 'pt_BR').format(selectedDate);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Histórico de Transações'),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_alt),
+            tooltip: 'Filtrar',
             onPressed: () async {
+              final transactionVM = Provider.of<TransactionViewModel>(context, listen: false);
 
+              final filters = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => TransactionFilterPage(
+                    currentFilters: transactionVM.currentFilters,
+                  ),
+                ),
+              );
+
+              if (filters != null) {
+                transactionVM.applyFilters(filters);
+              }
+            },
+
+          ),
+          IconButton(
+            icon: const Icon(Icons.filter_alt_off_outlined),
+            tooltip: 'Limpar Filtros',
+            onPressed: () {
+              transactionVM.applyFilters({
+                'tipo': null,
+                'conta': null,
+                'categoria': null,
+                'subcategoria': null,
+              });
             },
           ),
-
         ],
       ),
       body: Padding(
@@ -83,6 +111,74 @@ class _TransactionsHistoryScreenState extends State<TransactionsHistoryScreen> {
                 transactionVM.setFilter(newDate, period);
               },
             ),
+             if (transactionVM.currentFilters.values.any((value) => value != null)) ...[
+               const SizedBox(height: 8),
+               SingleChildScrollView(
+                 scrollDirection: Axis.horizontal,
+                 child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: const Text('Filtros:',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                )
+                      ),
+                    ),
+                    if (transactionVM.currentFilters['tipo'] != null)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Chip(
+                            backgroundColor: honeyTheme.primaryColor,
+                            label: Text(
+                                'Tipo: ${transactionVM.currentFilters['tipo']}')),
+                      ),
+                    if (transactionVM.currentFilters['conta'] != null)
+                       Padding(
+                         padding: const EdgeInsets.only(right: 8),
+                         child: Chip(
+                           backgroundColor: honeyTheme.primaryColor,
+                           label: Text(
+                             'Conta: ${accountVM.accounts.firstWhere(
+                                   (a) => a.id == transactionVM.currentFilters['conta'],
+                               orElse: () => Account(id: 0, name: 'Removida', balance: 0, initialBalance: 0),
+                             ).name}',
+                           ),
+                         ),
+                       ),
+                     if (transactionVM.currentFilters['categoria'] != null)
+                       Padding(
+                         padding: const EdgeInsets.only(right: 8),
+                         child: Chip(
+                           backgroundColor: honeyTheme.primaryColor,
+                           label: Text(
+                             'Categoria: ${categoryVM.categories.firstWhere(
+                                   (c) => c.id == transactionVM.currentFilters['categoria'],
+                               orElse: () => Category(id: 0, name: 'Removida', type: ''),
+                             ).name}',
+                           ),
+                         ),
+                       ),
+                     if (transactionVM.currentFilters['subcategoria'] != null)
+                       Padding(
+                         padding: const EdgeInsets.only(right: 8),
+                         child: Chip(
+                           backgroundColor: honeyTheme.primaryColor,
+                           label: Text(
+                             'Subcategoria: ${subCategoryVM.subCategories.firstWhere(
+                                   (s) => s.id == transactionVM.currentFilters['subcategoria'],
+                               orElse: () => SubCategory(id: 0, name: 'Removida', categoryId: 0),
+                             ).name}',
+                           ),
+                         ),
+                       ),
+                   ],
+                 ),
+               ),
+               const SizedBox(height: 12),
+            ],
+
             Expanded(
               child: ListView.builder(
                 itemCount: sortedDates.length,
@@ -124,18 +220,18 @@ class _TransactionsHistoryScreenState extends State<TransactionsHistoryScreen> {
                         ),
                       ),
                       ...transactionsForDate.map((transaction) {
-                        final Category category = categoryProvider.categories.firstWhere(
+                        final Category category = categoryVM.categories.firstWhere(
                           (cat) => cat.id == transaction.categoryId,
                           orElse: () => Category(id: 0, name: 'Categoria Removida', type: transaction.type),
                           //orElse: () => throw Exception('Categoria não encontrada para ID: ${transaction.categoryId}'),
                            );
 
-                        final SubCategory subCategory = categoryProvider.subCategories.firstWhere(
+                        final SubCategory subCategory = subCategoryVM.subCategories.firstWhere(
                           (subCat) => subCat.id == transaction.subCategoryId,
                           orElse: () => SubCategory(id: 0, name: 'Subcategoria Removida', categoryId: category.id ?? 0),
                           //orElse: () => throw Exception('Subcategoria não encontrada para ID: ${transaction.subCategoryId}'),
                           );
-                        final Account account = accountVM.account.firstWhere(
+                        final Account account = accountVM.accounts.firstWhere(
                             (account) => account.id == transaction.accountId,
                           orElse: () => Account(id: 0, name: 'Conta Removida', balance: 0.0, initialBalance: 0.0),
                           //orElse: () => throw Exception('Conta não encontrada para o ID: ${transaction.accountId}'),

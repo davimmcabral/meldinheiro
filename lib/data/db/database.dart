@@ -1,7 +1,5 @@
-import 'package:meldinheiro/models/account.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:meldinheiro/models/transaction.dart' as model;
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -74,25 +72,39 @@ class DatabaseHelper {
       },
     );
   }
+
   Future<Database?> _insertDefaultAccounts(Database db) async {
-    await db.insert('accounts', {'id': 1, 'name': 'Dinheiro', 'initialBalance': 0.0});
+    await db.insert(
+        'accounts', {'id': 1, 'name': 'Dinheiro', 'initialBalance': 0.0});
     return db;
   }
 
   Future<Database> _insertDefaultCategories(Database db) async {
-    await db.insert('categories', {'id': 1,'name': 'Moradia', 'type': 'Despesa'});
-    await db.insert('categories', {'id': 2,'name': 'Pessoal', 'type': 'Despesa'});
-    await db.insert('categories', {'id': 3,'name': 'Despesas Bancárias', 'type': 'Despesa'});
-    await db.insert('categories', {'id': 4,'name': 'Saúde', 'type': 'Despesa'});
-    await db.insert('categories', {'id': 5,'name': 'Educação', 'type': 'Despesa'});
-    await db.insert('categories', {'id': 6,'name': 'Lazer', 'type': 'Despesa'});
-    await db.insert('categories', {'id': 7,'name': 'Veículos', 'type': 'Despesa'});
-    await db.insert('categories', {'id': 8,'name': 'Outros', 'type': 'Despesa'});
+    await db.insert(
+        'categories', {'id': 1, 'name': 'Moradia', 'type': 'Despesa'});
+    await db.insert(
+        'categories', {'id': 2, 'name': 'Pessoal', 'type': 'Despesa'});
+    await db.insert('categories',
+        {'id': 3, 'name': 'Despesas Bancárias', 'type': 'Despesa'});
+    await db.insert(
+        'categories', {'id': 4, 'name': 'Saúde', 'type': 'Despesa'});
+    await db.insert(
+        'categories', {'id': 5, 'name': 'Educação', 'type': 'Despesa'});
+    await db.insert(
+        'categories', {'id': 6, 'name': 'Lazer', 'type': 'Despesa'});
+    await db.insert(
+        'categories', {'id': 7, 'name': 'Veículos', 'type': 'Despesa'});
+    await db.insert(
+        'categories', {'id': 8, 'name': 'Outros', 'type': 'Despesa'});
 
-    await db.insert('categories', {'id': 9,'name': 'Salário', 'type': 'Receita'});
-    await db.insert('categories', {'id': 10,'name': 'Investimentos', 'type': 'Receita'});
-    await db.insert('categories', {'id': 11,'name': 'Receitas Extras', 'type': 'Receita'});
-    await db.insert('categories', {'id': 12,'name': 'Outros Rendimentos', 'type': 'Receita'});
+    await db.insert(
+        'categories', {'id': 9, 'name': 'Salário', 'type': 'Receita'});
+    await db.insert(
+        'categories', {'id': 10, 'name': 'Investimentos', 'type': 'Receita'});
+    await db.insert(
+        'categories', {'id': 11, 'name': 'Receitas Extras', 'type': 'Receita'});
+    await db.insert('categories',
+        {'id': 12, 'name': 'Outros Rendimentos', 'type': 'Receita'});
 
     return db;
   }
@@ -139,7 +151,8 @@ class DatabaseHelper {
     await db.insert('subcategories',
         {'name': 'Poupança e aplicações (-Saques)', 'category_id': 3});
     await db.insert(
-        'subcategories', {'name': 'Rendimentos incorporados', 'category_id': 3});
+        'subcategories',
+        {'name': 'Rendimentos incorporados', 'category_id': 3});
     await db.insert(
         'subcategories', {'name': 'Prestações e planos', 'category_id': 3});
 
@@ -166,9 +179,11 @@ class DatabaseHelper {
     await db.insert(
         'subcategories', {'name': 'Jornais e revistas', 'category_id': 5});
     await db.insert(
-        'subcategories', {'name': 'Sindicatos e associações', 'category_id': 5});
+        'subcategories',
+        {'name': 'Sindicatos e associações', 'category_id': 5});
     await db.insert(
-        'subcategories', {'name': 'Inscrições e publicações', 'category_id': 5});
+        'subcategories',
+        {'name': 'Inscrições e publicações', 'category_id': 5});
 
     // category_id: 6
     await db.insert('subcategories',
@@ -177,9 +192,11 @@ class DatabaseHelper {
         {'name': 'Clube - mensalidades e outros', 'category_id': 6});
     await db.insert('subcategories',
         {'name': 'Vídeo locadora, TV paga e internet', 'category_id': 6});
-    await db.insert('subcategories', {'name': 'CD´s e DVD´s', 'category_id': 6});
     await db.insert(
-        'subcategories', {'name': 'Jogos, loterias e outros', 'category_id': 6});
+        'subcategories', {'name': 'CD´s e DVD´s', 'category_id': 6});
+    await db.insert(
+        'subcategories',
+        {'name': 'Jogos, loterias e outros', 'category_id': 6});
 
     // category_id: 7
     await db.insert('subcategories',
@@ -227,103 +244,4 @@ class DatabaseHelper {
     final String path = join(await getDatabasesPath(), 'meldinheiro.db');
     await deleteDatabase(path);
   }
-
-  /*Future<List<model.Transaction>> getTransactions() async {
-    final db = await database;
-    final result = await db.query('transactions');
-    return result.map((map) => model.Transaction.fromMap(map)).toList();
-  }
-
-  Future<int> insertTransaction(model.Transaction transaction) async {
-    final db = await database;
-    return await db.insert('transactions', transaction.toMap());
-  }
-
-  Future<List<model.Transaction>> findAll() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('transactions');
-    return List.generate(maps.length, (i) {
-      return model.Transaction.fromMap(maps[i]);
-    });
-  }
-
-  Future<int> deleteTransaction(int id) async {
-    final db = await database;
-    return await db.delete('transactions', where: 'id = ?', whereArgs: [id]);
-  }
-
-  Future<int> updateTransaction(model.Transaction transaction) async {
-    final db = await database;
-    return await db.update('transactions', transaction.toMap(),
-        where: 'id = ?', whereArgs: [transaction.id]);
-  }*/
-
-
-  Future<List<Map<String, dynamic>>> getSubCategories(int categoryId) async {
-    final db = await database;
-    return await db.query('subcategories', where: 'category_id = ?', whereArgs: [categoryId]);
-  }
-
-  Future<int> insertSubCategory(int categoryId, String name) async {
-    final db = await database;
-    return await db.insert('subcategories', {'category_id': categoryId, 'name': name});
-  }
-
-  Future<int> updateSubCategory(int id, int categoryId, String name) async {
-    final db = await database;
-    return await db.update('subcategories', {'category_id': categoryId, 'name': name}, where: 'id = ?', whereArgs: [id]);
-  }
-
-  Future<int> deleteSubCategory(int id) async {
-    final db = await database;
-    return await db.delete('subcategories', where: 'id = ?', whereArgs: [id]);
-  }
-
-
-  Future<int> insertAccount(Account account) async {
-    final db = await database;
-    return await db.insert('accounts', account.toMap());
-  }
-
-  Future<bool> accountNameExists(String name) async {
-    final db = await database;
-    final result = await db.query(
-      'accounts',
-      where: 'name = ?',
-      whereArgs: [name],
-    );
-    return result.isNotEmpty;
-  }
-
-
-
-  Future<List<Account>> getAccounts() async {
-    final db = await database;
-    final result = await db.query('accounts');
-    return result.map((map) => Account.fromMap(map)).toList();
-  }
-
-  Future<int> updateAccount(Account account) async {
-    final db = await database;
-    return await db.update(
-      'accounts',
-      account.toMap(),
-      /*{
-        'name': account.name,
-        'inicialBalance': account.initialBalance,
-      },*/
-      where: 'id = ?',
-      whereArgs: [account.id],
-    );
-  }
-
-  Future<int> deleteAccount(int id) async {
-    final db = await database;
-    return await db.delete('accounts', where: 'id = ?', whereArgs: [id]);
-  }
 }
-
-
-
-
-

@@ -2,8 +2,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:meldinheiro/component/dateFilterWidget.dart';
+import 'package:meldinheiro/widgets/dateFilterWidget.dart';
 import 'package:meldinheiro/viewmodels/category_viewmodel.dart';
+import 'package:meldinheiro/viewmodels/subcategory_viewmodel.dart';
 import 'package:meldinheiro/viewmodels/transaction_viewmodel.dart';
 
 import 'package:provider/provider.dart';
@@ -31,7 +32,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
     initializeDateFormatting('pt_BR', null);
     Future.microtask(() {
       Provider.of<CategoryViewModel>(context, listen: false).loadCategories();
-      Provider.of<CategoryViewModel>(context, listen: false).loadSubCategories();
+      Provider.of<SubCategoryViewModel>(context, listen: false).loadSubCategories();
       Provider.of<TransactionViewModel>(context, listen: false).loadTransactions();
     });
   }
@@ -48,13 +49,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final transactionvm = Provider.of<TransactionViewModel>(context);
-    final categoryProvider = Provider.of<CategoryViewModel>(context);
-    final subCategoryMap = getSubCategoryMap(categoryProvider);
-    final categoryMap = getCategoryMap(categoryProvider);
+    final transactionVM = Provider.of<TransactionViewModel>(context);
+    final categoryVM = Provider.of<CategoryViewModel>(context);
+    final subCategoryVM = Provider.of<SubCategoryViewModel>(context);
+    final subCategoryMap = getSubCategoryMap(subCategoryVM);
+    final categoryMap = getCategoryMap(categoryVM);
     final filteredTransactions = Provider.of<TransactionViewModel>(context).filteredTransactions; // Agora usando transações filtradas
-    final totalIncome = transactionvm.totalIncome;
-    final totalExpense = transactionvm.totalExpense;
+    final totalIncome = transactionVM.totalIncome;
+    final totalExpense = transactionVM.totalExpense;
 
     return Scaffold(
       appBar: AppBar(title: Text('Relatórios')),
@@ -63,10 +65,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
           Container(
             padding: EdgeInsets.all(8.0),
             child: DateFilterWidget(
-              initialDate: transactionvm.selectedDate,
-              initialPeriod: transactionvm.selectedPeriod,
+              initialDate: transactionVM.selectedDate,
+              initialPeriod: transactionVM.selectedPeriod,
               onDateChanged: (newDate, period) {
-                transactionvm.setFilter(newDate, period);
+                transactionVM.setFilter(newDate, period);
               },
             ),
           ),
@@ -76,10 +78,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSection('Receitas', 'Receita', Colors.green, filteredTransactions, categoryMap, totalIncome),
+                  _buildSection('Receitas por Categoria', 'Receita', Colors.green, filteredTransactions, categoryMap, totalIncome),
                   _buildPieChart('Receita', filteredTransactions, categoryMap, subCategoryMap),
 
-                  _buildSection('Despesas', 'Despesa', Colors.red, filteredTransactions, categoryMap, totalExpense),
+                  _buildSection('Despesas por Categoria', 'Despesa', Colors.red, filteredTransactions, categoryMap, totalExpense),
                   _buildPieChart('Despesa', filteredTransactions, categoryMap, subCategoryMap),
 
                   _buildResult(totalIncome, totalExpense),
@@ -155,13 +157,13 @@ class _ReportsScreenState extends State<ReportsScreen> {
     return grouped;
   }
 
-  Map<int, String> getCategoryMap(CategoryViewModel categoryProvider) {
-    return {for (var category in categoryProvider.categories)
+  Map<int, String> getCategoryMap(CategoryViewModel categoryVM) {
+    return {for (var category in categoryVM.categories)
       if (category.id != null) category.id!: category.name};
   }
 
-  Map<int, String> getSubCategoryMap (CategoryViewModel categoryProvider) {
-    return {for (var sub in categoryProvider.subCategories)
+  Map<int, String> getSubCategoryMap (SubCategoryViewModel subCategoryVM) {
+    return {for (var sub in subCategoryVM.subCategories)
       if (sub.id != null) sub.id!: sub.name};
   }
 

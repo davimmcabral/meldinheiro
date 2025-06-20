@@ -252,6 +252,7 @@ class EditCategoryScreen extends StatelessWidget {
 import 'package:flutter/material.dart';
 import 'package:meldinheiro/viewmodels/category_viewmodel.dart';
 import 'package:meldinheiro/models/subcategory.dart';
+import 'package:meldinheiro/viewmodels/subcategory_viewmodel.dart';
 import 'package:meldinheiro/viewmodels/transaction_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -264,10 +265,15 @@ class EditCategoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Editar Categorias')),
-      body: Consumer<CategoryViewModel>(
-        builder: (context, categoryProvider, _) {
-          final categories = categoryProvider.categories;
-          final subcategories = categoryProvider.subCategories;
+      body: Consumer3<CategoryViewModel, SubCategoryViewModel, TransactionViewModel>(
+        builder: (context, categoryVM, subCategoryVM, transactionVM, _) {
+          final categories = categoryVM.categories;
+          final subcategories = subCategoryVM.subCategories;
+
+        /*  Consumer2<CategoryViewModel, SubCategoryViewModel>(
+            builder: (context, categoryVM,subCategoryVM, _) {
+              final categories = categoryVM.categories;
+              final subcategories = subCategoryVM.subCategories;*/
 
           return ListView.separated(
             padding: const EdgeInsets.all(12),
@@ -290,8 +296,8 @@ class EditCategoryScreen extends StatelessWidget {
                   trailing: const Icon(Icons.arrow_drop_down),
                   leading: Icon(
                     category.type == 'Receita'
-                        ? Icons.trending_up
-                        : Icons.trending_down,
+                        ? Icons.add
+                        : Icons.remove,
                     color: category.type == 'Receita'
                         ? Colors.green
                         : Colors.red,
@@ -303,7 +309,7 @@ class EditCategoryScreen extends StatelessWidget {
                         IconButton(
                           icon: const Icon(Icons.edit),
                           onPressed: () => _showEditCategoryDialog(
-                              context, category, categoryProvider),
+                              context, category, categoryVM),
                         ),
                         IconButton(
                           icon:
@@ -316,7 +322,7 @@ class EditCategoryScreen extends StatelessWidget {
                               );
                               return;
                             }
-                            await categoryProvider.deleteCategory(category.id!);
+                            await categoryVM.deleteCategory(category.id!);
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                   content: Text('Categoria excluída.')),
@@ -325,30 +331,30 @@ class EditCategoryScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    ...relatedSubs.map((sub) {
+                    ...relatedSubs.map((subcategory) {
                       return ListTile(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 4),
                         leading: const Icon(Icons.subdirectory_arrow_right),
-                        title: Text(sub.name),
+                        title: Text(subcategory.name),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
                               icon: const Icon(Icons.edit),
                               onPressed: () => _showEditSubcategoryDialog(
-                                  context, sub, categoryProvider),
+                                  context, subcategory, subCategoryVM),
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
                               onPressed: () async {
                                 final transactionVM = context.read<TransactionViewModel>();
-                                if (transactionVM.hasTransactionsForSubcategory(sub.id!)) {
+                                if (transactionVM.hasTransactionsForSubcategory(subcategory.id!)) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(content: Text('Não é possível excluir: subcategoria com transações vinculadas!')),
                                   );
                                   return;
                                 }
-                                await categoryProvider.deleteSubCategory(sub.id!);
+                                await subCategoryVM.deleteSubCategory(subcategory.id!);
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(const SnackBar(
                                   content: Text('Subcategoria excluída.'),
@@ -370,7 +376,7 @@ class EditCategoryScreen extends StatelessWidget {
   }
 
   void _showEditCategoryDialog(BuildContext context, Category category,
-      CategoryViewModel provider) {
+      CategoryViewModel categoryVM) {
     final _formKey = GlobalKey<FormState>();
     String name = category.name;
     String type = category.type;
@@ -380,8 +386,8 @@ class EditCategoryScreen extends StatelessWidget {
       builder: (_) => AlertDialog(
         shape:
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: const [
+        title: const Row(
+          children: [
             Icon(Icons.edit, color: Colors.blue),
             SizedBox(width: 8),
             Text('Editar Categoria'),
@@ -423,7 +429,7 @@ class EditCategoryScreen extends StatelessWidget {
               if (_formKey.currentState!.validate()) {
                 final updated =
                 Category(id: category.id, name: name, type: type);
-                await provider.updateCategory(updated);
+                await categoryVM.updateCategory(updated);
                 Navigator.pop(context);
               }
             },
@@ -435,18 +441,18 @@ class EditCategoryScreen extends StatelessWidget {
     );
   }
 
-  void _showEditSubcategoryDialog(BuildContext context, SubCategory sub,
-      CategoryViewModel provider) {
+  void _showEditSubcategoryDialog(BuildContext context, SubCategory subCategory,
+      SubCategoryViewModel subCategoryVM) {
     final _formKey = GlobalKey<FormState>();
-    String name = sub.name;
+    String name = subCategory.name;
 
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         shape:
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: const [
+        title: const Row(
+          children: [
             Icon(Icons.edit, color: Colors.blue),
             SizedBox(width: 8),
             Text('Editar Subcategoria'),
@@ -473,8 +479,8 @@ class EditCategoryScreen extends StatelessWidget {
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
                 final updated = SubCategory(
-                    id: sub.id, name: name, categoryId: sub.categoryId);
-                await provider.updateSubCategory(updated);
+                    id: subCategory.id, name: name, categoryId: subCategory.categoryId);
+                await subCategoryVM.updateSubCategory(updated);
                 Navigator.pop(context);
               }
             },

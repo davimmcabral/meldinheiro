@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:meldinheiro/views/transactionFilterPage.dart';
+import 'package:meldinheiro/viewmodels/account_viewmodel.dart';
+import 'package:meldinheiro/viewmodels/transaction_viewmodel.dart';
 import 'package:meldinheiro/views/transactions/transaction_list_screen.dart';
-import 'package:meldinheiro/views/dashboard_screen.dart';
-import 'package:meldinheiro/views//reports_screen.dart';
-import 'package:meldinheiro/views/transactionAnalysisPage.dart';
-import 'package:meldinheiro/views/categories/categoryListScreen.dart';
-import 'accounts/addAccountScreen.dart';
-import 'categories/addCategoryScreen.dart';
-import 'budgetPage.dart';
-import 'categories/editCategoryScreen.dart';
+import 'package:meldinheiro/views/dashboard/dashboard_screen.dart';
+import 'package:meldinheiro/views/reports/reports_screen.dart';
+import 'package:provider/provider.dart';
+
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -27,10 +24,18 @@ class _HomePageState extends State<HomePage> {
     pc = PageController(initialPage: paginaAtual);
   }
 
-  setPaginaAtual(pagina) {
+  void _onPageChanged(int index) async {
     setState(() {
-      paginaAtual = pagina;
+      paginaAtual = index;
     });
+
+    if (index == 0) {
+      final transactionVM = context.read<TransactionViewModel>();
+      final accountVM = context.read<AccountViewModel>();
+
+      await transactionVM.loadTransactions();
+      await accountVM.updateBalancesWithTransactions(transactionVM.transactions);
+    }
   }
 
   @override
@@ -38,6 +43,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: PageView(
         controller: pc,
+        onPageChanged: _onPageChanged,
         children: [
           DashboardScreen(),
           TransactionsHistoryScreen(),
@@ -46,11 +52,9 @@ class _HomePageState extends State<HomePage> {
           //AddBudgetPage(),
           //EditCategoryScreen(),
           //AddAccountCard(),
-
           //TransactionsAnalysisPage(),
           //TransactionsHistory(),
         ],
-        onPageChanged: setPaginaAtual,
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: paginaAtual,
@@ -61,7 +65,7 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
               icon: Icon(Icons.receipt_long), label: 'Relatórios'),
           //BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Conta'),
-          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Conta'),
+          //BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Conta'),
 
         ],
         onTap: (pagina) {

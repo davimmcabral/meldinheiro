@@ -4,9 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:meldinheiro/models/subcategory.dart';
 import 'package:meldinheiro/models/transaction.dart';
 import 'package:meldinheiro/viewmodels/account_viewmodel.dart';
+import 'package:meldinheiro/viewmodels/subcategory_viewmodel.dart';
 import 'package:meldinheiro/viewmodels/transaction_viewmodel.dart';
 import 'package:provider/provider.dart';
-import '../categories/categoryListScreen.dart';
+import '../categories/category_list_screen.dart';
 import '../../viewmodels/category_viewmodel.dart';
 import '../../models/category.dart';
 
@@ -143,7 +144,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     final accountVM = Provider.of<AccountViewModel>(context);
-    final accounts = accountVM.account;
+    final accounts = accountVM.accounts;
 
     return Scaffold(
       appBar: AppBar(
@@ -275,7 +276,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
 
                           SubCategory? subcategory;
                           try {
-                            subcategory = Provider.of<CategoryViewModel>(context, listen: false)
+                            subcategory = Provider.of<SubCategoryViewModel>(context, listen: false)
                                 .subCategories
                                 .firstWhere((s) => s.id == _subCategoryId);
                           } catch (_) {
@@ -400,9 +401,10 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                 ),
               ),
               SizedBox(height: 16.0),
-              ElevatedButton(
+              ElevatedButton.icon(
+                icon: const Icon(Icons.save),
                 onPressed: _saveTransaction,
-                child: Text('Salvar'),
+                label: Text('Salvar'),
               ),
             ],
           ),
