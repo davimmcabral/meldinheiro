@@ -1,0 +1,479 @@
+@startuml
+set namespaceSeparator ::
+
+class "meldinheiro::data::daos::account_dao.dart::AccountDao" {
+  +dynamic getAccounts()
+  +dynamic insertAccount()
+  +dynamic accountNameExists()
+  +dynamic updateAccount()
+  +dynamic deleteAccount()
+}
+
+class "meldinheiro::data::daos::category_dao.dart::CategoryDao" {
+  +dynamic getAllCategories()
+  +dynamic getCategories()
+  +dynamic getCategoriesByType()
+  +dynamic insertCategory()
+  +dynamic updateCategory()
+  +dynamic deleteCategory()
+}
+
+class "meldinheiro::data::daos::subcategory_dao.dart::SubCategoryDao" {
+  +dynamic getAllSubCategories()
+  +dynamic insertSubCategory()
+  +dynamic updateSubCategory()
+  +dynamic deleteSubCategory()
+  +dynamic deleteByCategoryId()
+}
+
+class "meldinheiro::data::daos::transaction_dao.dart::TransactionDao" {
+  +dynamic findAll()
+  +dynamic insertTransaction()
+  +dynamic getTransactions()
+  +dynamic deleteTransaction()
+  +dynamic updateTransaction()
+}
+
+class "meldinheiro::data::db::database.dart::DatabaseHelper" {
+  {static} -DatabaseHelper _instance
+  {static} -Database? _database
+  {static} +DatabaseHelper instance
+  +dynamic database
+  -dynamic _initDatabase()
+  -dynamic _insertDefaultAccounts()
+  -dynamic _insertDefaultCategories()
+  -dynamic _insertDefaultSubCategories()
+  +dynamic deleteDatabaseFile()
+}
+
+"meldinheiro::data::db::database.dart::DatabaseHelper" o-- "meldinheiro::data::db::database.dart::DatabaseHelper"
+"meldinheiro::data::db::database.dart::DatabaseHelper" o-- "sqflite_common::sqlite_api.dart::Database"
+
+class "meldinheiro::main.dart::MelDinheiro" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "meldinheiro::main.dart::MelDinheiro"
+
+class "meldinheiro::models::account.dart::Account" {
+  +int? id
+  +String name
+  +double initialBalance
+  +double balance
+  +Map<String, dynamic> toMap()
+}
+
+class "meldinheiro::models::category.dart::Category" {
+  +int? id
+  +String name
+  +String type
+  +Map<String, dynamic> toMap()
+}
+
+class "meldinheiro::models::subcategory.dart::SubCategory" {
+  +int? id
+  +String name
+  +int categoryId
+  +Map<String, dynamic> toMap()
+}
+
+class "meldinheiro::models::transaction.dart::Transaction" {
+  +int? id
+  +String type
+  +int categoryId
+  +int subCategoryId
+  +String? description
+  +DateTime date
+  +double amount
+  +int accountId
+  +Map<String, dynamic> toMap()
+  +String toString()
+}
+
+class "meldinheiro::viewmodels::account_viewmodel.dart::AccountViewModel" {
+  -AccountDao _dao
+  -List<Account> _accounts
+  +List<Account> accounts
+  +double balance
+  +dynamic loadAccounts()
+  +dynamic updateBalancesWithTransactions()
+  +dynamic addAccount()
+  +dynamic updateAccount()
+  +dynamic deleteAccount()
+}
+
+"meldinheiro::viewmodels::account_viewmodel.dart::AccountViewModel" o-- "meldinheiro::data::daos::account_dao.dart::AccountDao"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "meldinheiro::viewmodels::account_viewmodel.dart::AccountViewModel"
+
+class "meldinheiro::viewmodels::category_viewmodel.dart::CategoryViewModel" {
+  -CategoryDao _dao
+  -List<Category> _categories
+  +List<Category> categories
+  +dynamic loadCategories()
+  +dynamic loadCategories1()
+  +dynamic loadCategoriesByType()
+  +dynamic addCategory()
+  +dynamic deleteCategory()
+  +dynamic updateCategory()
+}
+
+"meldinheiro::viewmodels::category_viewmodel.dart::CategoryViewModel" o-- "meldinheiro::data::daos::category_dao.dart::CategoryDao"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "meldinheiro::viewmodels::category_viewmodel.dart::CategoryViewModel"
+
+class "meldinheiro::viewmodels::subcategory_viewmodel.dart::SubCategoryViewModel" {
+  -SubCategoryDao _dao
+  -List<SubCategory> _subCategories
+  +List<SubCategory> subCategories
+  +dynamic loadSubCategories()
+  +dynamic SubCategoryViewModelViewModel()
+  +dynamic addSubCategory()
+  +dynamic updateSubCategory()
+  +dynamic deleteSubCategory()
+  +dynamic deleteByCategoryId()
+}
+
+"meldinheiro::viewmodels::subcategory_viewmodel.dart::SubCategoryViewModel" o-- "meldinheiro::data::daos::subcategory_dao.dart::SubCategoryDao"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "meldinheiro::viewmodels::subcategory_viewmodel.dart::SubCategoryViewModel"
+
+class "meldinheiro::viewmodels::transaction_viewmodel.dart::TransactionViewModel" {
+  -TransactionDao _dao
+  +AccountViewModel accountViewModel
+  -List<Transaction> _transactions
+  -Map<String, dynamic> _currentFilters
+  -DateTime _selectedDate
+  -String _selectedPeriod
+  -double _income
+  -double _expense
+  -double _balance
+  +List<Transaction> transactions
+  +Map<String, dynamic> currentFilters
+  +List<Transaction> filteredTransactions
+  +List<Transaction> filteredTransactions1
+  +DateTime selectedDate
+  +String selectedPeriod
+  +double totalIncome
+  +double totalExpense
+  +void applyFilters()
+  +void setFilter()
+  -bool _isSameDay()
+  -bool _isSameWeek()
+  +dynamic loadTransactions()
+  -void _calculateTotals()
+  +dynamic updateTransaction()
+  +dynamic addTransaction()
+  +dynamic deleteTransaction()
+  +bool hasTransactionsForAccount()
+  +bool hasTransactionsForCategory()
+  +bool hasTransactionsForSubcategory()
+}
+
+"meldinheiro::viewmodels::transaction_viewmodel.dart::TransactionViewModel" o-- "meldinheiro::data::daos::transaction_dao.dart::TransactionDao"
+"meldinheiro::viewmodels::transaction_viewmodel.dart::TransactionViewModel" o-- "meldinheiro::viewmodels::account_viewmodel.dart::AccountViewModel"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "meldinheiro::viewmodels::transaction_viewmodel.dart::TransactionViewModel"
+
+class "meldinheiro::views::accounts::addAccountScreen.dart::AddAccountScreen" {
+  +Account? account
+  +_AddAccountScreenState createState()
+}
+
+"meldinheiro::views::accounts::addAccountScreen.dart::AddAccountScreen" o-- "meldinheiro::models::account.dart::Account"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "meldinheiro::views::accounts::addAccountScreen.dart::AddAccountScreen"
+
+class "meldinheiro::views::accounts::addAccountScreen.dart::_AddAccountScreenState" {
+  -GlobalKey<FormState> _formKey
+  -TextEditingController _nameController
+  -MoneyMaskedTextController _initialBalanceController
+  +void initState()
+  +void dispose()
+  -void _saveAccount()
+  +Widget build()
+}
+
+"meldinheiro::views::accounts::addAccountScreen.dart::_AddAccountScreenState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"meldinheiro::views::accounts::addAccountScreen.dart::_AddAccountScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"meldinheiro::views::accounts::addAccountScreen.dart::_AddAccountScreenState" o-- "extended_masked_text::src::money_masked_text_controller.dart::MoneyMaskedTextController"
+"flutter::src::widgets::framework.dart::State" <|-- "meldinheiro::views::accounts::addAccountScreen.dart::_AddAccountScreenState"
+
+class "meldinheiro::views::accounts::editAccountScreen.dart::EditAccountScreen" {
+  +Account account
+  +State<EditAccountScreen> createState()
+}
+
+"meldinheiro::views::accounts::editAccountScreen.dart::EditAccountScreen" o-- "meldinheiro::models::account.dart::Account"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "meldinheiro::views::accounts::editAccountScreen.dart::EditAccountScreen"
+
+class "meldinheiro::views::accounts::editAccountScreen.dart::_EditAccountScreenState" {
+  -TextEditingController _nameController
+  -MoneyMaskedTextController _balanceController
+  +void initState()
+  -void _deleteAccount()
+  -void _saveChanges()
+  +Widget build()
+}
+
+"meldinheiro::views::accounts::editAccountScreen.dart::_EditAccountScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"meldinheiro::views::accounts::editAccountScreen.dart::_EditAccountScreenState" o-- "extended_masked_text::src::money_masked_text_controller.dart::MoneyMaskedTextController"
+"flutter::src::widgets::framework.dart::State" <|-- "meldinheiro::views::accounts::editAccountScreen.dart::_EditAccountScreenState"
+
+class "meldinheiro::views::categories::category_add_screen.dart::AddCategoryScreen" {
+  +_AddCategoryScreenState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "meldinheiro::views::categories::category_add_screen.dart::AddCategoryScreen"
+
+class "meldinheiro::views::categories::category_add_screen.dart::_AddCategoryScreenState" {
+  -GlobalKey<FormState> _formKey
+  -String? _categoryName
+  -String? _type
+  -List<String> _subcategories
+  -void _addSubcategoryField()
+  -void _removeSubcategoryField()
+  +Widget build()
+}
+
+"meldinheiro::views::categories::category_add_screen.dart::_AddCategoryScreenState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"flutter::src::widgets::framework.dart::State" <|-- "meldinheiro::views::categories::category_add_screen.dart::_AddCategoryScreenState"
+
+class "meldinheiro::views::categories::category_edit_screen.dart::EditCategoryScreen" {
+  +Widget build()
+  -void _showEditCategoryDialog()
+  -void _showEditSubcategoryDialog()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "meldinheiro::views::categories::category_edit_screen.dart::EditCategoryScreen"
+
+class "meldinheiro::views::categories::category_list_screen.dart::CategoryListScreen" {
+  +dynamic Function(int, int) onSelect
+  +String type
+  +_CategoryListScreenState createState()
+}
+
+"meldinheiro::views::categories::category_list_screen.dart::CategoryListScreen" o-- "null::dynamic Function(int, int)"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "meldinheiro::views::categories::category_list_screen.dart::CategoryListScreen"
+
+class "meldinheiro::views::categories::category_list_screen.dart::_CategoryListScreenState" {
+  +CategoryViewModel categoryVM
+  +SubCategoryViewModel subCategoryVM
+  +void initState()
+  +Widget build()
+}
+
+"meldinheiro::views::categories::category_list_screen.dart::_CategoryListScreenState" o-- "meldinheiro::viewmodels::category_viewmodel.dart::CategoryViewModel"
+"meldinheiro::views::categories::category_list_screen.dart::_CategoryListScreenState" o-- "meldinheiro::viewmodels::subcategory_viewmodel.dart::SubCategoryViewModel"
+"flutter::src::widgets::framework.dart::State" <|-- "meldinheiro::views::categories::category_list_screen.dart::_CategoryListScreenState"
+
+class "meldinheiro::views::dashboard::account_card.dart::AccountSummaryCard" {
+  +String formatCurrency()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "meldinheiro::views::dashboard::account_card.dart::AccountSummaryCard"
+
+class "meldinheiro::views::dashboard::dashboard_screen.dart::DashboardScreen" {
+  +State<DashboardScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "meldinheiro::views::dashboard::dashboard_screen.dart::DashboardScreen"
+
+class "meldinheiro::views::dashboard::dashboard_screen.dart::_DashboardScreenState" {
+  -dynamic _initFuture
+  +void initState()
+  -dynamic _initializeData()
+  +String formatCurrency()
+  +Widget build()
+  -Widget _buildDashboard()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "meldinheiro::views::dashboard::dashboard_screen.dart::_DashboardScreenState"
+
+class "meldinheiro::views::home_page_screen.dart::HomePage" {
+  +_HomePageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "meldinheiro::views::home_page_screen.dart::HomePage"
+
+class "meldinheiro::views::home_page_screen.dart::_HomePageState" {
+  +int paginaAtual
+  +PageController pc
+  +void initState()
+  -void _onPageChanged()
+  +Widget build()
+}
+
+"meldinheiro::views::home_page_screen.dart::_HomePageState" o-- "flutter::src::widgets::page_view.dart::PageController"
+"flutter::src::widgets::framework.dart::State" <|-- "meldinheiro::views::home_page_screen.dart::_HomePageState"
+
+class "meldinheiro::views::reports::reports_screen.dart::ReportsScreen" {
+  +State<ReportsScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "meldinheiro::views::reports::reports_screen.dart::ReportsScreen"
+
+class "meldinheiro::views::reports::reports_screen.dart::_ReportsScreenState" {
+  -int? _touchedIndexReceita
+  -int? _touchedIndexDespesa
+  -Map<String, Color> _categoryColors
+  +String formatCurrency()
+  +void initState()
+  +Color getCategoryColor()
+  +Widget build()
+  -Widget _buildSection()
+  -Widget _buildResult()
+  -Map<String, List<dynamic>> _groupByCategory()
+  +Map<int, String> getCategoryMap()
+  +Map<int, String> getSubCategoryMap()
+  -Widget _buildPieChart()
+  -Widget _buildFinanceRow()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "meldinheiro::views::reports::reports_screen.dart::_ReportsScreenState"
+
+class "meldinheiro::views::transactions::transaction_edit_screen.dart::EditTransactionScreen" {
+  +Transaction transaction
+  +_EditTransactionScreenState createState()
+}
+
+"meldinheiro::views::transactions::transaction_edit_screen.dart::EditTransactionScreen" o-- "meldinheiro::models::transaction.dart::Transaction"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "meldinheiro::views::transactions::transaction_edit_screen.dart::EditTransactionScreen"
+
+class "meldinheiro::views::transactions::transaction_edit_screen.dart::_EditTransactionScreenState" {
+  -GlobalKey<FormState> _formKey
+  -String _type
+  -int? _categoryId
+  -int? _subCategoryId
+  -int? _accountId
+  -String? _description
+  -DateTime _date
+  -double? _amount
+  -MoneyMaskedTextController _amountController
+  +void initState()
+  +void dispose()
+  -dynamic _selectDate()
+  -void _saveTransaction()
+  -void _deleteTransaction()
+  +Widget build()
+}
+
+"meldinheiro::views::transactions::transaction_edit_screen.dart::_EditTransactionScreenState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"meldinheiro::views::transactions::transaction_edit_screen.dart::_EditTransactionScreenState" o-- "extended_masked_text::src::money_masked_text_controller.dart::MoneyMaskedTextController"
+"flutter::src::widgets::framework.dart::State" <|-- "meldinheiro::views::transactions::transaction_edit_screen.dart::_EditTransactionScreenState"
+
+class "meldinheiro::views::transactions::transaction_filter_screen.dart::TransactionFilterPage" {
+  +Map<String, dynamic> currentFilters
+  +State<TransactionFilterPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "meldinheiro::views::transactions::transaction_filter_screen.dart::TransactionFilterPage"
+
+class "meldinheiro::views::transactions::transaction_filter_screen.dart::_TransactionFilterPageState" {
+  -String? _type
+  -int? _accountId
+  -int? _categoryId
+  -int? _subCategoryId
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "meldinheiro::views::transactions::transaction_filter_screen.dart::_TransactionFilterPageState"
+
+class "meldinheiro::views::transactions::transaction_form_screen.dart::TransactionFormScreen" {
+  +String? initialType
+  +dynamic Function(Transaction) onSave
+  +_TransactionFormScreenState createState()
+}
+
+"meldinheiro::views::transactions::transaction_form_screen.dart::TransactionFormScreen" o-- "null::dynamic Function(Transaction)"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "meldinheiro::views::transactions::transaction_form_screen.dart::TransactionFormScreen"
+
+class "meldinheiro::views::transactions::transaction_form_screen.dart::_TransactionFormScreenState" {
+  -GlobalKey<FormState> _formKey
+  -String? _type
+  -int? _categoryId
+  -int? _subCategoryId
+  -int? _accountId
+  -String? _description
+  -DateTime _date
+  -double? _amount
+  -MoneyMaskedTextController _amountController
+  +void initState()
+  -dynamic _selectDate()
+  -dynamic _saveTransaction()
+  +Widget build()
+}
+
+"meldinheiro::views::transactions::transaction_form_screen.dart::_TransactionFormScreenState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"meldinheiro::views::transactions::transaction_form_screen.dart::_TransactionFormScreenState" o-- "extended_masked_text::src::money_masked_text_controller.dart::MoneyMaskedTextController"
+"flutter::src::widgets::framework.dart::State" <|-- "meldinheiro::views::transactions::transaction_form_screen.dart::_TransactionFormScreenState"
+
+class "meldinheiro::views::transactions::transaction_list_screen.dart::TransactionsHistoryScreen" {
+  +_TransactionsHistoryScreenState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "meldinheiro::views::transactions::transaction_list_screen.dart::TransactionsHistoryScreen"
+
+class "meldinheiro::views::transactions::transaction_list_screen.dart::_TransactionsHistoryScreenState" {
+  +String formatCurrency()
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "meldinheiro::views::transactions::transaction_list_screen.dart::_TransactionsHistoryScreenState"
+
+class "meldinheiro::widgets::dateFilterWidget.dart::DateFilterWidget" {
+  +DateTime initialDate
+  +String initialPeriod
+  +dynamic Function(DateTime, String) onDateChanged
+  +_DateFilterWidgetState createState()
+}
+
+"meldinheiro::widgets::dateFilterWidget.dart::DateFilterWidget" o-- "null::dynamic Function(DateTime, String)"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "meldinheiro::widgets::dateFilterWidget.dart::DateFilterWidget"
+
+class "meldinheiro::widgets::dateFilterWidget.dart::_DateFilterWidgetState" {
+  -DateTime _selectedDate
+  -String _selectedPeriod
+  +void initState()
+  -void _changePeriod()
+  -void _changeDate()
+  -void _showPeriodSelection()
+  -String _formatDate()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "meldinheiro::widgets::dateFilterWidget.dart::_DateFilterWidgetState"
+
+class "meldinheiro::widgets::filterPeriodSelector.dart::FilterPeriodSelector" {
+  +dynamic Function(FilterPeriod, DateTime?, DateTime?) onPeriodSelected
+  +State<FilterPeriodSelector> createState()
+}
+
+"meldinheiro::widgets::filterPeriodSelector.dart::FilterPeriodSelector" o-- "null::dynamic Function(FilterPeriod, DateTime, DateTime)"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "meldinheiro::widgets::filterPeriodSelector.dart::FilterPeriodSelector"
+
+class "meldinheiro::widgets::filterPeriodSelector.dart::_FilterPeriodSelectorState" {
+  -FilterPeriod _selectedPeriod
+  -DateTime? _customStartDate
+  -DateTime? _customEndDate
+  -dynamic _selectDateRange()
+  -void _updatePeriod()
+  +Widget build()
+}
+
+"meldinheiro::widgets::filterPeriodSelector.dart::_FilterPeriodSelectorState" o-- "meldinheiro::widgets::filterPeriodSelector.dart::FilterPeriod"
+"flutter::src::widgets::framework.dart::State" <|-- "meldinheiro::widgets::filterPeriodSelector.dart::_FilterPeriodSelectorState"
+
+class "meldinheiro::widgets::filterPeriodSelector.dart::FilterPeriod" {
+  +int index
+  {static} +List<FilterPeriod> values
+  {static} +FilterPeriod today
+  {static} +FilterPeriod week
+  {static} +FilterPeriod month
+  {static} +FilterPeriod year
+  {static} +FilterPeriod custom
+}
+
+"meldinheiro::widgets::filterPeriodSelector.dart::FilterPeriod" o-- "meldinheiro::widgets::filterPeriodSelector.dart::FilterPeriod"
+"dart::core::Enum" <|-- "meldinheiro::widgets::filterPeriodSelector.dart::FilterPeriod"
+
+
+@enduml

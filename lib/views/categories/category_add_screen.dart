@@ -48,6 +48,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                   final isReceita = type == 'Receita';
                   final color = isReceita ? Colors.green : Colors.red;
                   final icon = isReceita ? Icons.arrow_upward : Icons.arrow_downward;
+                  final backgroundColor = isReceita ? Colors.green : Colors.red;
 
                   return Expanded(
                     child: GestureDetector(
@@ -61,7 +62,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? color.withOpacity(0.1)
+                              ? color.withOpacity(0.3)
                               : Theme.of(context).cardColor,
                           border: Border.all(color: color, width: isSelected ? 2 : 1),
                           borderRadius: BorderRadius.circular(12),
@@ -69,7 +70,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(icon, color: color),
+                            CircleAvatar(
+                              backgroundColor: backgroundColor,
+                              child: Icon(icon, color: Colors.white),
+                            ),
                             const SizedBox(height: 4),
                             Text(
                               type,
@@ -87,9 +91,12 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                 }).toList(),
               ),
               const SizedBox(height: 24),
+              Text('Categoria', style: Theme.of(context).textTheme.labelLarge),
+              const SizedBox(height: 12),
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Nome da Categoria',
+                  fillColor: Theme.of(context).cardColor,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 validator: (value) =>
@@ -110,7 +117,8 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                         initialValue: _subcategories[index],
                         onChanged: (value) => _subcategories[index] = value,
                         decoration: InputDecoration(
-                          labelText: 'Subcategoria ${index + 1}',
+                          labelText: 'Nome da Subcategoria',
+                          fillColor: Theme.of(context).cardColor,
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         validator: (value) =>
@@ -145,7 +153,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
 
                     // Cria e adiciona a categoria
                     final newCategory = Category(name: _categoryName!, type: _type!);
-                    await categoryVM.addCategory(newCategory);
+                    await categoryVM.InsertCategory(newCategory);
 
                     // Obtem a categoria salva com o ID (recarregado do banco após inserção)
                     final savedCategory = categoryVM.categories.lastWhere((c) => c.name == _categoryName! && c.type == _type!);
@@ -155,9 +163,9 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       if (subcategory.trim().isEmpty) continue;
                       final newSubCategory = SubCategory(
                         name: subcategory.trim(),
-                        categoryId: savedCategory.id!, // id atribuído pelo SQLite
+                        categoryId: savedCategory.id!,
                       );
-                      await subCategoryVM.addSubCategory(newSubCategory);
+                      await subCategoryVM.insertSubCategory(newSubCategory);
                     }
                     Navigator.of(context).pop(true);
 
@@ -168,26 +176,6 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                     );
                   }
                 },
-                /*onPressed: () {
-                  if (_formKey.currentState!.validate() && _type != null) {
-                    _formKey.currentState!.save();
-
-                    final subcats = _subcategories
-                        .where((s) => s.trim().isNotEmpty)
-                        .toList();
-
-                    // Aqui você pode salvar _categoryName, _type e subcats no banco de dados
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Categoria "$_categoryName" com ${subcats.length} subcategorias criada.')),
-                    );
-                    Navigator.of(context).pop();
-                  } else if (_type == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Selecione o tipo da categoria')),
-                    );
-                  }
-                },*/
                 child: const Text('Salvar Categoria'),
               ),
             ],

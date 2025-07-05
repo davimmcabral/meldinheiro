@@ -335,62 +335,6 @@ class _TransactionsHistoryScreenState extends State<TransactionsHistoryScreen> {
                             ),
                           ),
                         );
-
-                        /*return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 2,
-                        margin: EdgeInsets.symmetric(vertical: 4.0),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: transaction.type == 'Receita'
-                                ? Colors.green
-                                : Colors.red,
-                            child: Icon(
-                              transaction.type == 'Receita'
-                                  ? Icons.add
-                                  : Icons.remove,
-                              color: Colors.white,
-                            ),
-                          ),
-                          title: Text('${category.name} - ${subCategory.name}'),
-                          subtitle: Text('${transaction.description}', overflow: TextOverflow.ellipsis),
-                          trailing: Container(
-                            width: MediaQuery.of(context).size.width * 0.32,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center ,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  '\n${formatCurrency(transaction.amount)}',
-                                  style: TextStyle(
-                                    color: transaction.type == 'Receita'
-                                        ? Colors.green
-                                        : Colors.red,
-                                  ),
-                                ),
-                                Text(
-                                  account.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(fontSize: 12),
-
-                                ),
-                              ],
-                            ),
-                          ),
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditTransactionScreen(
-                                      transaction: transaction),
-                                ),
-                              );
-                            },
-                          ),
-                        );*/
                       }),
                     ],
                   );

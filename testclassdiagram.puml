@@ -1,0 +1,38 @@
+@startuml
+set namespaceSeparator ::
+
+class "meldinheiro::models::account.dart::Account" {
+  +int? id
+  +String name
+  +double initialBalance
+  +double balance
+  +Map<String, dynamic> toMap()
+}
+
+class "meldinheiro::models::category.dart::Category" {
+  +int? id
+  +String name
+  +String type
+  +Map<String, dynamic> toMap()
+}
+
+class "meldinheiro::models::subcategory.dart::SubCategory" {
+  +int? id
+  +String name
+  +int categoryId
+  +Map<String, dynamic> toMap()
+}
+
+class "meldinheiro::models::transaction.dart::Transaction" {
+  +int? id
+  +String type
+  +int categoryId
+  +int subCategoryId
+  +String? description
+  +DateTime date
+  +double amount
+  +int accountId
+  +Map<String, dynamic> toMap()
+  +String toString()
+}
+@enduml

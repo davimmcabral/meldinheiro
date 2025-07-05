@@ -129,9 +129,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildFinanceRow('Receitas', income, Colors.green),
+                _buildFinanceRow('Receitas do Período', income, Colors.green),
                 const Divider(),
-                _buildFinanceRow('Despesas', expense, Colors.red),
+                _buildFinanceRow('Despesas do Período', expense, Colors.red),
                 const Divider(),
                 _buildFinanceRow(
                   'Resultado do Período',

@@ -186,7 +186,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? color.withOpacity(0.1)
+                              ? color.withOpacity(0.3)
                               : Theme.of(context).cardColor,
                           border: Border.all(color: color, width: isSelected ? 2 : 1),
                           borderRadius: BorderRadius.circular(12),

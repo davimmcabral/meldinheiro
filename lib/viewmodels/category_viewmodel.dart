@@ -81,7 +81,7 @@ class CategoryViewModel with ChangeNotifier {
     await loadSubCategories();
   }*/
 
-  Future<void> addCategory(Category category) async {
+  Future<void> InsertCategory(Category category) async {
     await _dao.insertCategory(category);
     await loadCategories();
   }

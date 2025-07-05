@@ -48,12 +48,6 @@ class _HomePageState extends State<HomePage> {
           DashboardScreen(),
           TransactionsHistoryScreen(),
           ReportsScreen(),
-          //TransactionFilterPage(currentFilters: {},),
-          //AddBudgetPage(),
-          //EditCategoryScreen(),
-          //AddAccountCard(),
-          //TransactionsAnalysisPage(),
-          //TransactionsHistory(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -64,9 +58,6 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'Transações'),
           BottomNavigationBarItem(
               icon: Icon(Icons.receipt_long), label: 'Relatórios'),
-          //BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Conta'),
-          //BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Conta'),
-
         ],
         onTap: (pagina) {
           pc.animateToPage(
@@ -75,7 +66,7 @@ class _HomePageState extends State<HomePage> {
             curve: Curves.ease,
           );
         },
-        // backgroundColor: Colors.grey[100],
+         backgroundColor: Colors.grey[100],
       ),
     );
   }

@@ -4,7 +4,7 @@ import 'package:meldinheiro/viewmodels/category_viewmodel.dart';
 import 'package:meldinheiro/viewmodels/account_viewmodel.dart';
 import 'package:meldinheiro/viewmodels/subcategory_viewmodel.dart';
 import 'package:meldinheiro/viewmodels/transaction_viewmodel.dart';
-import 'package:meldinheiro/views/home_page_screen.dart';
+import 'package:meldinheiro/views/homepage/home_page_screen.dart';
 import 'package:meldinheiro/theme/honeytheme.dart';
 import 'package:provider/provider.dart';
 
@@ -24,22 +24,6 @@ void main() async {
         ChangeNotifierProvider(create: (_) => SubCategoryViewModel()),
       ],
       child: const MelDinheiro(),
-  /*WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('pt_BR', null);
-
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => AccountViewModel()),
-        ChangeNotifierProxyProvider<AccountViewModel, TransactionViewModel>(
-          create: (context) =>
-              TransactionViewModel(accountViewModel: context.read<AccountViewModel>()),
-          update: (context, accountVM, transactionVM) =>
-              TransactionViewModel(accountViewModel: accountVM),
-        ),
-
-        ChangeNotifierProvider(create: (context) => CategoryProvider()),
-      ], child: const MelDinheiro(),*/
     ),
   );
 }

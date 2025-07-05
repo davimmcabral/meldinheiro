@@ -19,7 +19,7 @@ class SubCategoryViewModel with ChangeNotifier {
     //  Carrega os dados ao iniciar o Provider
   }
 
-  Future<void> addSubCategory(SubCategory subCategory) async {
+  Future<void> insertSubCategory(SubCategory subCategory) async {
     await _dao.insertSubCategory(subCategory);
     await loadSubCategories();
   }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/intl.dart';
 import 'package:meldinheiro/viewmodels/account_viewmodel.dart';
 import 'package:meldinheiro/viewmodels/transaction_viewmodel.dart';
 import 'package:meldinheiro/views/dashboard/account_card.dart';
+import 'package:meldinheiro/views/transactions/transaction_form_screen.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/dateFilterWidget.dart';
 import '../../data/db/database.dart';
@@ -192,11 +194,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 20),
               const AccountSummaryCard(),
               const SizedBox(height: 20),
-              ElevatedButton(
+              /*ElevatedButton(
                 onPressed: _deleteDatabase,
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 child: const Text('Deletar Banco de Dados', style: TextStyle(color: Colors.white)),
-              ),
+              ),*/
             ],
           ),
         ),

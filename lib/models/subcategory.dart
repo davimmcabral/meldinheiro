@@ -9,7 +9,7 @@ class SubCategory {
     required this.categoryId,
   });
 
-  // Converter de Map (banco de dados) para Objeto
+
   factory SubCategory.fromMap(Map<String, dynamic> map) {
     return SubCategory(
       id: map['id'],
@@ -18,7 +18,7 @@ class SubCategory {
     );
   }
 
-  // Converter de Objeto para Map (banco de dados)
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,

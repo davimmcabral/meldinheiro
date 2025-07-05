@@ -96,7 +96,6 @@ class DatabaseHelper {
         'categories', {'id': 7, 'name': 'Veículos', 'type': 'Despesa'});
     await db.insert(
         'categories', {'id': 8, 'name': 'Outros', 'type': 'Despesa'});
-
     await db.insert(
         'categories', {'id': 9, 'name': 'Salário', 'type': 'Receita'});
     await db.insert(
@@ -191,9 +190,9 @@ class DatabaseHelper {
     await db.insert('subcategories',
         {'name': 'Clube - mensalidades e outros', 'category_id': 6});
     await db.insert('subcategories',
-        {'name': 'Vídeo locadora, TV paga e internet', 'category_id': 6});
+        {'name': 'Streaming de vídeo, TV paga e internet', 'category_id': 6});
     await db.insert(
-        'subcategories', {'name': 'CD´s e DVD´s', 'category_id': 6});
+        'subcategories', {'name': 'Streaming de música', 'category_id': 6});
     await db.insert(
         'subcategories',
         {'name': 'Jogos, loterias e outros', 'category_id': 6});

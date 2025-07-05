@@ -93,7 +93,6 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //Provider.of<TransactionViewModel>(context, listen: false).loadTransactions();
     Provider.of<CategoryViewModel>(context, listen: false).loadCategories();
     Provider.of<SubCategoryViewModel>(context, listen: false).loadSubCategories();
     Provider.of<AccountViewModel>(context, listen: false).loadAccounts();
@@ -134,7 +133,7 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? color.withOpacity(0.1)
+                              ? color.withOpacity(0.3)
                               : Theme.of(context).cardColor,
                           border: Border.all(color: color, width: isSelected ? 2 : 1),
                           borderRadius: BorderRadius.circular(12),
@@ -180,7 +179,6 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
                         );
                         return;
                       }
-
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -264,97 +262,6 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
                   );
                 },
               ),
-
-
-
-
-/*              GestureDetector(
-                onTap: () async {
-                  if (_type == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Por favor, selecione o tipo primeiro')),
-                    );
-                    return;
-                  }
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CategoryListScreen(
-                        type: _type!,
-                        onSelect: (categoryId, subcategoryId) {
-                          setState(() {
-                            _categoryId = categoryId;
-                            _subCategoryId = subcategoryId;
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                  );
-                },
-                child: InputDecorator(
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.all(24),
-                    labelText: 'Categoria e Subcategoria',
-                    prefixIcon: const Icon(Icons.category),
-                    filled: true,
-                    fillColor: Theme.of(context).cardColor,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    errorText: state.errorText,
-                  ),
-                  child: Builder(
-                    builder: (context) {
-                      Category? category;
-                      try {
-                        category = Provider.of<CategoryProvider>(context, listen: false)
-                            .categories
-                            .firstWhere((c) => c.id == _categoryId);
-                      } catch (_) {
-                        category = null;
-                      }
-
-                      SubCategory? subcategory;
-                      try {
-                        subcategory = Provider.of<CategoryProvider>(context, listen: false)
-                            .subCategories
-                            .firstWhere((s) => s.id == _subCategoryId);
-                      } catch (_) {
-                        subcategory = null;
-                      }
-                      if (category != null && subcategory != null && category.name.isNotEmpty && subcategory.name.isNotEmpty) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              category.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              subcategory.name,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ],
-                        );
-                      } else {
-                        return const Text(
-                          'Selecionar Categoria e Subcategoria',
-                          style: TextStyle(color: Colors.grey),
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ),*/
               const SizedBox(height: 12),
               DropdownButtonFormField<int>(
                 isExpanded: true,

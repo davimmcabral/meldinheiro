@@ -1,13 +1,11 @@
-
-
 class Transaction {
   int? id;
-  String type; // Tipo da transação (Despesa, Receita, etc.)
-  int categoryId; // Categoria (ex: Alimentação, Transporte)
-  int subCategoryId; // Subcategoria (ex: Restaurante, Ônibus)
+  String type;
+  int categoryId;
+  int subCategoryId;
   String? description;
-  DateTime date; // Data da transação
-  double amount; // Valor da transação (negativo para despesas)
+  DateTime date;
+  double amount;
   int accountId;
 
   Transaction({
@@ -21,7 +19,6 @@ class Transaction {
     required this.accountId,
   });
 
-  // Converter a transação para um Map (para inserir no banco de dados)
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -35,8 +32,7 @@ class Transaction {
     };
   }
 
-  // Criar uma transação a partir de um Map (para recuperar do banco de dados)
-  factory Transaction.fromMap(Map<String, dynamic> map) {
+  factory Transaction.  fromMap(Map<String, dynamic> map) {
     return Transaction(
       id: map['id'],
       type: map['type'],
@@ -46,7 +42,6 @@ class Transaction {
       date: DateTime.parse(map['date']),
       amount: (map['amount'] is num) ? map['amount'].toDouble() : double.tryParse(map['amount'].toString()) ?? 0.0,
       accountId: map['account_id']
-      //amount: map['amount' as num].toDouble(),
     );
   }
 

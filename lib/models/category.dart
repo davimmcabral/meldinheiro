@@ -1,7 +1,7 @@
 class Category {
   int? id;
   String name;
-  String type; // Tipo da transação (Receita ou Despesa)
+  String type;
 
 
   Category({
@@ -10,7 +10,7 @@ class Category {
     required this.type,
 
   });
-  // Converter de Map (banco de dados) para Objeto
+
   factory Category.fromMap(Map<String, dynamic> map) {
     return Category(
       id: map['id'],
@@ -19,7 +19,6 @@ class Category {
     );
   }
 
-  // Converter de Objeto para Map (banco de dados)
   Map<String, dynamic> toMap() {
     return {
       'id': id,

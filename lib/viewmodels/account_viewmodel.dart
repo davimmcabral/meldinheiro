@@ -12,15 +12,12 @@ class AccountViewModel extends ChangeNotifier{
 
   AccountViewModel() {
     loadAccounts();
-    //  Carrega os dados ao iniciar o Provider
   }
 
   Future<void> loadAccounts() async {
     _accounts = await _dao.getAccounts();
-    //_updateAccountBalances();
     notifyListeners();
   }
-
 
   Future<void> updateBalancesWithTransactions(List<model.Transaction> transactions) async {
     if (_accounts.isEmpty) {
